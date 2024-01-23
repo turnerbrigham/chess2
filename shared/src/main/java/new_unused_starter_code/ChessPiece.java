@@ -1,4 +1,4 @@
-package chess;
+package new_unused_starter_code;
 
 import java.util.Collection;
 
@@ -10,7 +10,7 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
+    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
     }
 
     /**

@@ -1,6 +1,7 @@
 package passoffTests;
 
-import chess.*;
+import chess.*; //
+//import chess.*;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.HashSet;
@@ -15,24 +16,29 @@ public class TestFactory {
     // Chess Functions
     // ------------------------------------------------------------------------------------------------------------------
     public static ChessBoard getNewBoard() {
-        return new ChessBoard();
+        //return new ChessBoard();
+        return new board();
     }
 
     public static ChessGame getNewGame() {
-        return new ChessGame();
+        //return new ChessGame();
+        return new Game();
     }
 
     public static ChessPiece getNewPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
-        return new ChessPiece(pieceColor, type);
+        //return new ChessPiece(pieceColor, type);
+        return new Piece(pieceColor, type);
     }
 
     public static ChessPosition getNewPosition(int row, int col) {
-        return new ChessPosition(row, col);
+        //return new ChessPosition(row, col);
+        return new Position(row, col);
     }
 
     public static ChessMove getNewMove(ChessPosition startPosition, ChessPosition endPosition,
                                        ChessPiece.PieceType promotionPiece) {
-        return new ChessMove(startPosition, endPosition, promotionPiece);
+        //return new ChessMove(startPosition, endPosition, promotionPiece);
+        return new Move(startPosition, endPosition, promotionPiece);
     }
     // ------------------------------------------------------------------------------------------------------------------
 
@@ -52,6 +58,7 @@ public class TestFactory {
     // ------------------------------------------------------------------------------------------------------------------
 
     static public ChessPosition startPosition(int row, int col) {
+
         return getNewPosition(row, col);
     }
 

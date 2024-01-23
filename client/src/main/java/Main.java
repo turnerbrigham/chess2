@@ -1,4 +1,5 @@
-import chess.*;
+import new_unused_starter_code.ChessGame;
+import new_unused_starter_code.ChessPiece;
 
 public class Main {
     public static void main(String[] args) {
