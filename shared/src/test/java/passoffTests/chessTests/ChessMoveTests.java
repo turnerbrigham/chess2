@@ -1,7 +1,7 @@
 package passoffTests.chessTests;
 
-import chess.ChessMove;
-import chess.ChessPiece;
+import chess.ChessMoveOrig;
+import chess.ChessPieceOrig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,11 +14,11 @@ import static passoffTests.TestFactory.getNewMove;
 import static passoffTests.TestFactory.getNewPosition;
 
 public class ChessMoveTests {
-    private ChessMove original;
-    private ChessMove equal;
-    private ChessMove startDifferent;
-    private ChessMove endDifferent;
-    private ChessMove promoteDifferent;
+    private ChessMoveOrig original;
+    private ChessMoveOrig equal;
+    private ChessMoveOrig startDifferent;
+    private ChessMoveOrig endDifferent;
+    private ChessMoveOrig promoteDifferent;
     @BeforeEach
     public void setUp() {
         original = getNewMove(getNewPosition(2, 6), getNewPosition(1, 5), null);
@@ -26,7 +26,7 @@ public class ChessMoveTests {
         startDifferent = getNewMove(getNewPosition(2, 4), getNewPosition(1, 5), null);
         endDifferent = getNewMove(getNewPosition(2, 6), getNewPosition(5, 3), null);
         promoteDifferent = getNewMove(getNewPosition(2, 6), getNewPosition(1, 5),
-                ChessPiece.PieceType.QUEEN);
+                ChessPieceOrig.PieceType.QUEEN);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class ChessMoveTests {
     @Test
     @DisplayName("Combined Testing")
     public void hashSetTest() {
-        Set<ChessMove> set = new HashSet<>();
+        Set<ChessMoveOrig> set = new HashSet<>();
         set.add(original);
 
         Assertions.assertTrue(set.contains(original));

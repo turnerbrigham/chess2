@@ -1,29 +1,44 @@
 package chess;
 
-/**
- * Represents a single square position on a chess board
- * <p>
- * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
- */
-public class ChessPosition {
-
-    public ChessPosition(int row, int col) {
+public class ChessPosition extends ChessPositionOrig {
+    public int row = 0;
+    public int column = 0;
+    public ChessPosition(int roww, int coll){
+        super( roww, coll);
+        row = roww;
+        column = coll;
     }
-
-    /**
-     * @return which row this position is in
-     * 1 codes for the bottom row
-     */
+    @Override
     public int getRow() {
-        throw new RuntimeException("Not implemented");
+        return row;
     }
 
-    /**
-     * @return which column this position is in
-     * 1 codes for the left row
-     */
+    @Override
     public int getColumn() {
-        throw new RuntimeException("Not implemented");
+        return column;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        System.out.println("            got to 0");
+        if (this == obj) {
+            return true; // Same reference
+        }
+        System.out.println("            got to 1");
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false; // Null or different class
+        }
+        System.out.println("            got to 2");
+
+        ChessPosition otherPosition = (ChessPosition) obj; // Cast obj to Person
+        return otherPosition.getRow() == getRow() && otherPosition.getColumn() == getColumn();
+    }
+
+    public int hashCode() {
+        int result = 17;
+        result += 31 * result + row;
+        result += 31 * result + column;
+        return result;
     }
 }

@@ -4,12 +4,10 @@ import chess.*;
 import org.junit.jupiter.api.*;
 import passoffTests.TestFactory;
 
-import static passoffTests.TestFactory.*;
-
 public class ChessBoardTests_unofficial {
-    private ChessPosition original;
-    private ChessPosition equal;
-    private ChessPosition different;
+    private ChessPositionOrig original;
+    private ChessPositionOrig equal;
+    private ChessPositionOrig different;
     @BeforeEach
     public void setUp() {
         original = passoffTests.TestFactory.getNewPosition(3, 7);

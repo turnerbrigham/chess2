@@ -1,52 +1,272 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
-/**
- * Represents a single chess piece
- * <p>
- * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
- */
-public class ChessPiece {
+public class ChessPiece extends ChessPieceOrig {
+    public PieceType thisPieceType = PieceType.ROOK;
+    public ChessGameOrig.TeamColor thisTeamColor = ChessGameOrig.TeamColor.WHITE;
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
+    public ChessPiece(ChessGameOrig.TeamColor pieceColor, PieceType type) {
+        super(pieceColor, type);
+        thisPieceType = type;
+        thisTeamColor = pieceColor;
     }
 
-    /**
-     * The various different chess piece options
-     */
-    public enum PieceType {
-        KING,
-        QUEEN,
-        BISHOP,
-        KNIGHT,
-        ROOK,
-        PAWN
+    @Override
+    public ChessGameOrig.TeamColor getTeamColor() {
+        return thisTeamColor; //null;
     }
-
-    /**
-     * @return Which team this chess piece belongs to
-     */
-    public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+    public static ChessPiece convertToHigher(ChessPieceOrig oldPiece){
+        //        Piece newPiece = new Piece();
+        //        newPiece.thisPieceType = oldPiece.getPieceType() ;
+        //        newPiece.thisTeamColor = oldPiece.getTeamColor() ;
+        //        return newPiece;
+        //note Piece(ChessGame.TeamColor pieceColor, PieceType type)
+        return new ChessPiece( oldPiece.getTeamColor() , oldPiece.getPieceType() );
     }
-
-    /**
-     * @return which type of chess piece this piece is
-     */
+    public ChessPiece getCopy(){
+        //Piece newPiece = new Piece();
+        //newPiece.thisPieceType = thisPieceType;
+        //newPiece.thisTeamColor = thisTeamColor;
+        //return newPiece;
+        return new ChessPiece( thisTeamColor , thisPieceType );
+    }
+    @Override
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return thisPieceType; //null;
+    }
+    public boolean myPieceHere(ChessBoardOrig board , ChessPosition testPos ){
+        if (testPos.row > 8 || testPos.row < 1 ||testPos.column<1 || testPos.column > 8){
+            return false;
+        }
+        if ( board.getPiece( testPos ) != null ){
+            //System.out.println("at least a piece is here")
+            if ( board.getPiece( testPos ).getTeamColor() == thisTeamColor ){
+                return true;
+            }
+        }
+        return false;
+    }
+    boolean otherPieceHere(ChessBoardOrig board , ChessPosition testPos ){
+        if (testPos.row > 8 || testPos.row < 1 ||testPos.column<1 || testPos.column >8){
+            return false;
+        }
+        if ( board.getPiece( testPos ) != null ){
+            if ( board.getPiece( testPos ).getTeamColor() != thisTeamColor ){
+                return true;
+            }
+        }
+        return false;
     }
 
-    /**
-     * Calculates all the positions a chess piece can move to
-     * Does not take into account moves that are illegal due to leaving the king in
-     * danger
-     *
-     * @return Collection of valid moves
-     */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+    @Override
+    public Collection<ChessMoveOrig> pieceMoves(ChessBoardOrig board, ChessPositionOrig myPosition ) {
+        ChessPosition startPosition = new ChessPosition( myPosition.getRow() , myPosition.getColumn() );
+        //Collection<ChessMove> moves = new ArrayList<>();
+        Set<ChessMoveOrig> moves;
+        moves = new HashSet<>();
+
+        if (thisPieceType == PieceType.PAWN){
+            PieceType[] allTypes = {PieceType.ROOK,PieceType.KNIGHT,PieceType.BISHOP, PieceType.QUEEN }; //PieceType.PAWN,
+
+            int directionn;
+            if ( thisTeamColor == ChessGameOrig.TeamColor.WHITE ){
+                directionn = 1;
+            }
+            else{
+                directionn = -1;
+            }
+            //moving two forward:
+            if ( (startPosition.row==2 && directionn == 1)  ||
+                    (startPosition.row==7 && directionn == -1) ){
+                ChessPosition newPosition_sm = new ChessPosition( startPosition.row+directionn , startPosition.column );
+                ChessPosition newPosition = new ChessPosition( startPosition.row+ 2*directionn , startPosition.column );
+
+                if ( !(  myPieceHere( board , newPosition ) || otherPieceHere( board , newPosition ) ||
+                        myPieceHere( board , newPosition_sm ) || otherPieceHere( board , newPosition_sm )  )){
+                    moves.add(new ChessMove( startPosition , newPosition ) );
+                }
+            }
+
+            //generally moving forward
+            //for (int i : new int[]{1,2} ){
+            ChessPosition newPosition = new ChessPosition( startPosition.row+directionn , startPosition.column );
+            if (  !(myPieceHere( board , newPosition ) || otherPieceHere( board , newPosition )   )  ){
+                //promoting piece if necessary
+                if (newPosition.row == 1 || newPosition.row == 8){
+                    //System.out.println("maybe promoting normally");
+                    for (PieceType samplePiece : allTypes ){
+                        //System.out.println("promoting normally");
+                        ChessMove potentialMove = new ChessMove( startPosition , newPosition );
+    //                        potentialMove.promotionPiece = new piece();
+    //                        potentialMove.promotionPiece.thisPieceType = samplePiece;
+    //                        potentialMove.promotionPiece.thisTeamColor = thisTeamColor;
+
+                        potentialMove.promotionPiece = samplePiece;
+                        moves.add( potentialMove );
+                    }
+                }
+                else {
+                    moves.add(new ChessMove( startPosition , newPosition ) );
+                }
+            }
+
+            //killing someone
+            //System.out.println("maybe kill? 1");
+            int newRow = startPosition.row + directionn;
+            if ( newRow >0 && newRow <= 8 ){
+                //System.out.println("maybe kill? 2");
+                for (int i : new int[]{-1,1} ){
+                    int newColumn = startPosition.column + i;
+                    if ( newColumn >0 && newColumn <= 8 ){
+                        //System.out.println("maybe kill? 3");
+                        ChessPosition endPosition = new ChessPosition( newRow , newColumn );
+                        if (board.getPiece( endPosition ) != null ){
+                            //System.out.println("maybe kill? 4");
+                            //I can add a new move, but first I should consider promotion
+                            if (endPosition.column == 1 || endPosition.column == 8){
+                                //System.out.println("maybe kill? 5");
+                                for (PieceType samplePiece : allTypes ){
+                                    ChessMove potentialMove = new ChessMove( startPosition , endPosition );
+//                                    potentialMove.promotionPiece = new piece();
+//                                    potentialMove.promotionPiece.thisPieceType = samplePiece;
+//                                    potentialMove.promotionPiece.thisTeamColor = thisTeamColor;
+                                    potentialMove.promotionPiece = samplePiece;
+                                    moves.add( potentialMove );
+                                }
+                            }
+                            else {
+                                //System.out.println("maybe kill? 4.5");
+                                moves.add(new ChessMove( startPosition , endPosition ) );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (thisPieceType == PieceType.ROOK || thisPieceType == PieceType.QUEEN ){
+            for (int Qdirection : new int[]{-1,1} ){
+                for (int i = 1 ; i < 8 ; i++){
+                    ChessPosition newPosition = new ChessPosition( startPosition.row+i*Qdirection , startPosition.column );
+                    if (myPieceHere( board , newPosition )){
+                        break;
+                    }
+                    moves.add(new ChessMove( startPosition , newPosition ));
+                    if (otherPieceHere( board , newPosition )){
+                        break;
+                    }
+                }
+            }
+            for (int Qdirection : new int[]{-1,1} ){
+                for (int i = 1 ; i < 8 ; i++){
+                    ChessPosition newPosition = new ChessPosition( startPosition.row , startPosition.column+i*Qdirection );
+                    if (myPieceHere( board , newPosition )){
+                        break;
+                    }
+                    moves.add(new ChessMove( startPosition , newPosition ));
+                    if (otherPieceHere( board , newPosition )){
+                        break;
+                    }
+                }
+            }
+        }
+        if (thisPieceType == PieceType.BISHOP || thisPieceType == PieceType.QUEEN ){
+            System.out.println( "bishop zone: "  );
+            for (int Qdirection : new int[]{-1,1} ){
+                for (int i = 1 ; i < 8 ; i++){
+                    ChessPosition newPosition = new ChessPosition( startPosition.row+i*Qdirection , startPosition.column+i*Qdirection );
+                    if (myPieceHere( board , newPosition )){
+                        break;
+                    }
+                    moves.add(new ChessMove( startPosition , newPosition ));
+                    if (otherPieceHere( board , newPosition )){
+                        break;
+                    }
+                }
+            }
+            for (int Qdirection : new int[]{-1,1} ){
+                for (int i = 1 ; i < 8 ; i++){
+                    ChessPosition newPosition = new ChessPosition( startPosition.row+i*Qdirection , startPosition.column-i*Qdirection );
+                    if (myPieceHere( board , newPosition )){
+                        break;
+                    }
+                    moves.add(new ChessMove( startPosition , newPosition ));
+                    if (otherPieceHere( board , newPosition )){
+                        break;
+                    }
+                }
+            }
+        }
+        if (thisPieceType == PieceType.KING ){
+            moves.add(new ChessMove( startPosition ,
+                    new ChessPosition( startPosition.row + 1 , startPosition.column ) ));
+            moves.add(new ChessMove( startPosition ,
+                    new ChessPosition( startPosition.row - 1 , startPosition.column ) ));
+            moves.add(new ChessMove( startPosition ,
+                    new ChessPosition( startPosition.row , startPosition.column + 1 ) ));
+            moves.add(new ChessMove( startPosition ,
+                    new ChessPosition( startPosition.row , startPosition.column - 1 ) ));
+
+            moves.add(new ChessMove( startPosition ,
+                    new ChessPosition( startPosition.row + 1 , startPosition.column +1) ));
+            moves.add(new ChessMove( startPosition ,
+                    new ChessPosition( startPosition.row - 1 , startPosition.column -1) ));
+            moves.add(new ChessMove( startPosition ,
+                    new ChessPosition( startPosition.row  +1, startPosition.column - 1 ) ));
+            moves.add(new ChessMove( startPosition ,
+                    new ChessPosition( startPosition.row -1 , startPosition.column + 1 ) ));
+
+        }
+        if (thisPieceType == PieceType.KNIGHT){
+            for (  int Qdirection : new int[]{-2,2} ){
+                for (  int side : new int[]{-1,1} ){
+                    moves.add(new ChessMove( startPosition ,
+                            new ChessPosition( startPosition.row+side , startPosition.column + Qdirection ) ));
+                    moves.add(new ChessMove( startPosition ,
+                            new ChessPosition( startPosition.row+Qdirection , startPosition.column + side ) ));
+                }
+            }
+        }
+//        System.out.println( "inter3_size: " + moves.size() );
+//        System.out.println( "__" + myPosition.getRow() + "_" + myPosition.getColumn() );
+//        System.out.println( " I here:" + myPieceHere( board , new position(6,6)) );
+
+        Iterator<ChessMoveOrig> iterator = moves.iterator();
+        while (iterator.hasNext()) {
+            ChessMoveOrig presentMove = iterator.next();
+            ChessPosition endPosition = new ChessPosition( presentMove.getEndPosition().getRow() , presentMove.getEndPosition().getColumn() );
+            if ( myPieceHere( board , endPosition ) || endPosition.row > 8 || endPosition.row <= 0 ||
+                                                       endPosition.column > 8 || endPosition.column <= 0) {
+                //System.out.println( "  " + endPosition.row + "_" + endPosition.column );
+                iterator.remove();
+            }
+        }
+        //System.out.println( "inter4_size: " + moves.size() );
+
+        return moves;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        //System.out.println("fuck yeah");
+        if (this == obj) {
+            return true; // Same reference
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false; // Null or different class
+        }
+
+        ChessPiece otherPiece = (ChessPiece) obj; // Cast obj to Person
+        return otherPiece.thisPieceType == thisPieceType && otherPiece.thisTeamColor == thisTeamColor;
+    }
+    public static void main(String[] args){
+        PieceType thisPieceType = PieceType.ROOK;
+        PieceType otherPieceType = thisPieceType;
+        thisPieceType = PieceType.BISHOP;
+        System.out.println( thisPieceType  );
+        System.out.println( otherPieceType  );
     }
 }

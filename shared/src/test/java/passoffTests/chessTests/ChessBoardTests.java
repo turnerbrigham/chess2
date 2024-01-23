@@ -1,8 +1,8 @@
 package passoffTests.chessTests;
 
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.ChessGameOrig;
+import chess.ChessPieceOrig;
+import chess.ChessPositionOrig;
 import org.junit.jupiter.api.*;
 
 import static passoffTests.TestFactory.*;
@@ -12,13 +12,13 @@ public class ChessBoardTests {
     @Test
     @DisplayName("Add and Get Piece")
     public void getAddPiece() {
-        ChessPosition position = getNewPosition(4, 4);
-        ChessPiece piece = getNewPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        ChessPositionOrig position = getNewPosition(4, 4);
+        ChessPieceOrig piece = getNewPiece(ChessGameOrig.TeamColor.BLACK, ChessPieceOrig.PieceType.BISHOP);
 
         var board = getNewBoard();
         board.addPiece(position, piece);
 
-        ChessPiece foundPiece = board.getPiece(position);
+        ChessPieceOrig foundPiece = board.getPiece(position);
 
         Assertions.assertEquals(piece.getPieceType(), foundPiece.getPieceType(),
                 "ChessPiece returned by getPiece had the wrong piece type");

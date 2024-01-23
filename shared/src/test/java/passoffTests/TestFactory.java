@@ -15,30 +15,30 @@ public class TestFactory {
 
     // Chess Functions
     // ------------------------------------------------------------------------------------------------------------------
-    public static ChessBoard getNewBoard() {
+    public static ChessBoardOrig getNewBoard() {
         //return new ChessBoard();
-        return new board();
+        return new ChessBoard();
     }
 
-    public static ChessGame getNewGame() {
+    public static ChessGameOrig getNewGame() {
         //return new ChessGame();
-        return new Game();
+        return new ChessGame();
     }
 
-    public static ChessPiece getNewPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    public static ChessPieceOrig getNewPiece(ChessGameOrig.TeamColor pieceColor, ChessPieceOrig.PieceType type) {
         //return new ChessPiece(pieceColor, type);
-        return new Piece(pieceColor, type);
+        return new ChessPiece(pieceColor, type);
     }
 
-    public static ChessPosition getNewPosition(int row, int col) {
+    public static ChessPositionOrig getNewPosition(int row, int col) {
         //return new ChessPosition(row, col);
-        return new Position(row, col);
+        return new ChessPosition(row, col);
     }
 
-    public static ChessMove getNewMove(ChessPosition startPosition, ChessPosition endPosition,
-                                       ChessPiece.PieceType promotionPiece) {
+    public static ChessMoveOrig getNewMove(ChessPositionOrig startPosition, ChessPositionOrig endPosition,
+                                           ChessPieceOrig.PieceType promotionPiece) {
         //return new ChessMove(startPosition, endPosition, promotionPiece);
-        return new Move(startPosition, endPosition, promotionPiece);
+        return new ChessMove(startPosition, endPosition, promotionPiece);
     }
     // ------------------------------------------------------------------------------------------------------------------
 
@@ -57,7 +57,7 @@ public class TestFactory {
     }
     // ------------------------------------------------------------------------------------------------------------------
 
-    static public ChessPosition startPosition(int row, int col) {
+    static public ChessPositionOrig startPosition(int row, int col) {
 
         return getNewPosition(row, col);
     }
@@ -66,27 +66,27 @@ public class TestFactory {
         return endPos;
     }
 
-    static public void validateMoves(String boardText, ChessPosition startPosition, int[][] endPositions) {
+    static public void validateMoves(String boardText, ChessPositionOrig startPosition, int[][] endPositions) {
         var board = loadBoard(boardText);
         var testPiece = board.getPiece(startPosition);
         var validMoves = loadMoves(startPosition, endPositions);
         validateMoves(board, testPiece, startPosition, validMoves);
     }
 
-    static public void validateMoves(ChessBoard board, ChessPiece testPiece, ChessPosition startPosition, Set<ChessMove> validMoves) {
+    static public void validateMoves(ChessBoardOrig board, ChessPieceOrig testPiece, ChessPositionOrig startPosition, Set<ChessMoveOrig> validMoves) {
         var pieceMoves = new HashSet<>(testPiece.pieceMoves(board, startPosition));
         Assertions.assertEquals(validMoves, pieceMoves, "Wrong moves");
     }
 
-    final static Map<Character, ChessPiece.PieceType> charToTypeMap = Map.of(
-            'p', ChessPiece.PieceType.PAWN,
-            'n', ChessPiece.PieceType.KNIGHT,
-            'r', ChessPiece.PieceType.ROOK,
-            'q', ChessPiece.PieceType.QUEEN,
-            'k', ChessPiece.PieceType.KING,
-            'b', ChessPiece.PieceType.BISHOP);
+    final static Map<Character, ChessPieceOrig.PieceType> charToTypeMap = Map.of(
+            'p', ChessPieceOrig.PieceType.PAWN,
+            'n', ChessPieceOrig.PieceType.KNIGHT,
+            'r', ChessPieceOrig.PieceType.ROOK,
+            'q', ChessPieceOrig.PieceType.QUEEN,
+            'k', ChessPieceOrig.PieceType.KING,
+            'b', ChessPieceOrig.PieceType.BISHOP);
 
-    public static ChessBoard loadBoard(String boardText) {
+    public static ChessBoardOrig loadBoard(String boardText) {
         var board = getNewBoard();
         int row = 8;
         int column = 1;
@@ -100,8 +100,8 @@ public class TestFactory {
                 case '|' -> {
                 }
                 default -> {
-                    ChessGame.TeamColor color = Character.isLowerCase(c) ? ChessGame.TeamColor.BLACK
-                            : ChessGame.TeamColor.WHITE;
+                    ChessGameOrig.TeamColor color = Character.isLowerCase(c) ? ChessGameOrig.TeamColor.BLACK
+                            : ChessGameOrig.TeamColor.WHITE;
                     var type = charToTypeMap.get(Character.toLowerCase(c));
                     var position = TestFactory.getNewPosition(row, column);
                     var piece = TestFactory.getNewPiece(color, type);
@@ -113,8 +113,8 @@ public class TestFactory {
         return board;
     }
 
-    public static Set<ChessMove> loadMoves(ChessPosition startPosition, int[][] endPositions) {
-        var validMoves = new HashSet<ChessMove>();
+    public static Set<ChessMoveOrig> loadMoves(ChessPositionOrig startPosition, int[][] endPositions) {
+        var validMoves = new HashSet<ChessMoveOrig>();
         for (var endPosition : endPositions) {
             validMoves.add(TestFactory.getNewMove(startPosition,
                     TestFactory.getNewPosition(endPosition[0], endPosition[1]), null));
